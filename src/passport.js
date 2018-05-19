@@ -5,7 +5,6 @@ const ExtractJwt = require('passport-jwt').ExtractJwt; // Auth via JWT
 const jwt = require('jsonwebtoken'); // auth via JWT for hhtp
 
 
-
 module.exports = (db, jwtsecret) => {
 
   passport.use(new LocalStrategy({
@@ -17,21 +16,20 @@ module.exports = (db, jwtsecret) => {
     const user = db.get('users')
                   .find({ email })
                   .value();
-      console.log('user local', user);
+      // console.log('user local', user);
       if (!user || user.password !== password) {
         return done(null, false, {message: 'User does not exist or wrong password.'});
       }
       return done(null, user);
-  })
-  );
+  }));
 
   //----------Passport JWT Strategy--------//
 
   // Expect JWT in the http header
 
   const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: jwtsecret
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: jwtsecret
   };
 
   passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
