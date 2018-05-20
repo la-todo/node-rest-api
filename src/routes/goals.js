@@ -13,7 +13,7 @@ module.exports = (router, { db }, { checkAuth }) => {
             ...ctx.request.body,
           })
           .write();
-      ctx.body = id;
+      ctx.body = { id };
       } catch(err) {
         ctx.throw(500, err.message);
       }
@@ -22,12 +22,14 @@ module.exports = (router, { db }, { checkAuth }) => {
 
   router.get('/goals', checkAuth, async(ctx) => {
     try {
-      ctx.body = db.get('goals')
-        .filter({ userId: ctx.user.id })
-        .value();
-      } catch(err) {
-        ctx.throw(500, err.message);
-      }
+      ctx.body = {
+        goals: db.get('goals')
+          .filter({ userId: ctx.user.id })
+          .value()
+      };
+    } catch(err) {
+      ctx.throw(500, err.message);
+    }
   });
 
   router.get('/goals/:id', checkAuth, async(ctx) => {
@@ -55,9 +57,10 @@ module.exports = (router, { db }, { checkAuth }) => {
 
   router.delete('/goals/:id', checkAuth, async(ctx) => {
     try {
-      ctx.body = db.get('goals')
+      db.get('goals')
         .remove({ userId: ctx.user.id, id: ctx.params.id })
         .write();
+      ctx.body = { id: ctx.params.id };
       } catch(err) {
         ctx.throw(500, err.message);
       }

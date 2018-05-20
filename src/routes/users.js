@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken'); // auth via JWT for http
 const shortid = require('shortid');
 
 module.exports = (router, { db, jwtsecret, passport }, { checkAuth }) => {
-  router.post('/user', async(ctx, next) => {
+  router.post('/users', async(ctx, next) => {
     try {
       const user = ctx.request.body.email && db.get('users')
         .find({ email: ctx.request.body.email })
@@ -17,7 +17,7 @@ module.exports = (router, { db, jwtsecret, passport }, { checkAuth }) => {
           ...ctx.request.body,
         })
         .write();
-      ctx.body = id;
+      ctx.body = { id };
     }
     catch (err) {
       ctx.status = 400;
@@ -30,7 +30,7 @@ module.exports = (router, { db, jwtsecret, passport }, { checkAuth }) => {
   router.post('/login', async(ctx, next) => {
     await passport.authenticate('local', function (err, user) {
       if (user == false) {
-        ctx.body = "Login failed";
+        ctx.throw(401);
       } else {
         const payload = {
           id: user.id,
@@ -38,7 +38,7 @@ module.exports = (router, { db, jwtsecret, passport }, { checkAuth }) => {
         };
         const token = jwt.sign(payload, jwtsecret); //JWT is created here
 
-        ctx.body = {user: user.email, token: token};
+        ctx.body = { email: user.email, token: token };
       }
     })(ctx, next);
 
