@@ -34,12 +34,11 @@ module.exports = (router, { db, jwtsecret, passport }, { checkAuth }) => {
       } else {
         const payload = {
           id: user.id,
-          displayName: user.displayName,
           email: user.email
         };
         const token = jwt.sign(payload, jwtsecret); //JWT is created here
 
-        ctx.body = {user: user.displayName, token: token};
+        ctx.body = {user: user.email, token: token};
       }
     })(ctx, next);
 

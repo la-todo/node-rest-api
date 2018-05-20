@@ -36,7 +36,7 @@ module.exports = (db, jwtsecret) => {
     const user = db.get('users')
       .find({ id: payload.id }).value();
 
-      console.log('jwt strategy', user);
+      // console.log('jwt strategy', user);
 
     if (user) {
       done(null, user)
